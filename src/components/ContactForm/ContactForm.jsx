@@ -1,38 +1,46 @@
-import { useId } from 'react'
+
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as yup from 'yup'
+import { nanoid } from 'nanoid'
+import styles from './ContactForm.module.css'
+
+const validationSchema = yup.object().shape({
+    name:yup.string().min(3, 'Name must be at least 3 characters').max(50, 'Max 50 characters').required('Name is required'),
+    number:yup.string().min(3,'Number must be at least 3 characters').max(50, 'Max 50 characters').required('Number is required')
+})
 
 const ContactForm = ({ handleCreate }) => {
-  const nameId = useId()
-  const numberId = useId()
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    const contact = {
-      name: e.target.elements.Name.value,
-      number: e.target.elements.Number.value,
-    }
-
-    handleCreate(contact)
-    e.target.reset()
+  const handleSubmit = (values, actions) => {
+    // Додаємо id до нового контакту
+    const newContact = { id: nanoid(), ...values }
+    handleCreate(newContact)
+    actions.resetForm()
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor={nameId}>Name:</label>
-      <br />
-      <input type="text" name="Name" id={nameId} required />
-      <br />
-      <br />
-
-      <label htmlFor={numberId}>Number:</label>
-      <br />
-      <input type="text" name="Number" id={numberId} required />
-      <br />
-      <br />
-
-      <button type="submit">Add contact</button>
-    </form>
+    <Formik
+      initialValues={{ name: '', number: '' }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {() => (
+        <Form className={styles.form}>
+          <label>
+            Name:
+            <Field type="text" name="name" className={styles.field} />
+            <ErrorMessage name="name" component="span" className={styles.error} />
+          </label>
+          <br />
+          <label>
+            Number:
+            <Field type="text" name="number" className={styles.field} />
+            <ErrorMessage name="number" component="span" className={styles.error} />
+          </label>
+          <br />
+          <button type="submit">Add Contact</button>
+        </Form>
+      )}
+    </Formik>
   )
 }
-
 export default ContactForm

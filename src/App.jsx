@@ -1,36 +1,53 @@
-import { useState } from 'react'
-import { Formik } from 'formik';
+
+import { useState, useEffect } from 'react'
 import ContactList from './components/ContactList/ContactList';
 import ContactForm from './components/ContactForm/ContactForm';
 import SearchBox from './components/SearchBox/SearchBox';
-
-
+import { nanoid } from 'nanoid';
 import './App.css'
 
-const initialContacts = [
-  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-];
+
 
 function App() {
-  const [contacts, setContacts] = useState(initialContacts);
+    const loadContacts = () => {
+    const savedContacts = localStorage.getItem('contacts')
+    return savedContacts ? JSON.parse(savedContacts) : []
+  }
+
+  const [contacts, setContacts] = useState(loadContacts());
   const [filter, setFilter] = useState('');
-  
-const handleDelete = (id) => {
-  setContacts(contacts.filter(contact => contact.id !== id));
-}
+
+
+  const handleDelete = (id) => {
+    const updatedContacts = contacts.filter(contact => contact.id !== id)
+    setContacts(updatedContacts)
+  }
+ useEffect(() => {
+    if (contacts.length > 0) {
+      localStorage.setItem('contacts', JSON.stringify(contacts))
+    }
+  }, [contacts]) 
 
  const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  )
+
+ const errorMessage = filter && filteredContacts.length === 0 
+    ? 'No contacts found' 
+    : null; // or ''
+
+   const handleCreate = (contact) => {
+    const newContact = { id: nanoid(), ...contact }
+    const updatedContacts = [...contacts, newContact]
+    setContacts(updatedContacts)
+  }
 
   return (
   <div>
   <h1>Phonebook</h1>
-  <ContactForm />
+  <ContactForm handleCreate={handleCreate} />
   <SearchBox filter={filter} setFilter={setFilter}/>
+  {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
   <ContactList contacts={filteredContacts} onDelete={handleDelete} />
 </div>
 
