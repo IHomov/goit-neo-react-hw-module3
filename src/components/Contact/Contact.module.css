@@ -3,9 +3,10 @@
   justify-content: space-between;
   align-items: center;
   border: 1px solid #000;
-  padding: 12px;
+  padding: 10px;
   border-radius: 6px;
   margin-bottom: 8px;
+  width: 250px;
 }
 
 .info p {
@@ -13,17 +14,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-grow: 1;
 }
 
 .icon {
   font-size: 14px;
+  color: black;
 }
 
 .deleteBtn {
-  padding: 6px 10px;
   cursor: pointer;
-}
-
-.icon {
-  color: black;
+  margin-left: auto;
 }

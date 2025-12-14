@@ -43,7 +43,7 @@ function App() {
   }
 
   return (
-  <div>
+  <div >
   <h1>Phonebook</h1>
   <ContactForm handleCreate={handleCreate} />
   <SearchBox filter={filter} setFilter={setFilter}/>
